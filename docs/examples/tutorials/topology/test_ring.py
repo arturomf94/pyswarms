@@ -1,5 +1,6 @@
 # Import modules
 import numpy as np
+import numpy.ma as ma
 
 # Import sphere function as objective function
 from pyswarms.utils.functions.single_obj import sphere as f
@@ -8,10 +9,14 @@ from pyswarms.utils.functions.single_obj import sphere as f
 import pyswarms.backend as P
 from pyswarms.backend.topology import AdaptiveRing
 
-N = 6
+N = 50
 my_topology = AdaptiveRing() # The Topology Class
 my_options = {'c1': 0.6, 'c2': 0.3, 'w': 0.4, 'feasibility': np.zeros(N, dtype = bool)} # arbitrarily set
 my_swarm = P.create_swarm(n_particles = N, dimensions=2, options=my_options) # The Swarm Class
+
+# Set pbest position and cost as None
+my_swarm.pbest_pos = np.asarray([None] * N)
+my_swarm.pbest_cost = np.asarray([None] * N)
 
 print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict__.keys()))
 
@@ -27,19 +32,26 @@ def con1(x):
     feasible = np.asarray([var[0] for var in feasible])
     return feasible
 
-iterations = 1 # Set 100 iterations
-for i in range(iterations):
-    # Part 1: Update personal best
-    my_swarm.current_cost = f(my_swarm.position) # Compute current cost
-    my_swarm.pbest_cost = f(my_swarm.pbest_pos)  # Compute personal best pos
-    my_swarm.options['feasibility'] = all_constraints(my_swarm.position)
-    my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_pbest(my_swarm) # Update and store
+iterations = 100 # Set 100 iterations
+# Check feasibility and update personal best only if feasible
+my_swarm.options['feasibility'] = all_constraints(my_swarm.position)
+for particle_id in range(N):
+    if my_swarm.options['feasibility'][particle_id] == True:
+        my_swarm.pbest_pos[particle_id] = my_swarm.position[particle_id]
 
+for i in range(iterations):
+    # Part 1: Update personal best if feasible
+    my_swarm.options['feasibility'] = all_constraints(my_swarm.position)
+    my_swarm.current_cost = f(my_swarm.position) # Compute current cost
+    for particle_id in range(N):
+        if my_swarm.options['feasibility'][particle_id] == True:
+            my_swarm.pbest_cost[particle_id] = f(np.array([my_swarm.pbest_pos[particle_id]]))[0] # Compute personal best pos
+    my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_constrained_pbest(my_swarm) # Update and store
     # Part 2: Update global best
     # Note that gbest computation is dependent on your topology
-    if np.min(my_swarm.pbest_cost) < my_swarm.best_cost:
+    min_cost = min(x for x in my_swarm.pbest_cost if x is not None)
+    if min_cost < my_swarm.best_cost:
         my_swarm.best_pos, my_swarm.best_cost = my_topology.compute_gbest(my_swarm, p = 2, k = 5)
-
     # Let's print our output
     if i%20==0:
         print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))

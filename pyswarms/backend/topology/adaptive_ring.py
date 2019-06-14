@@ -78,6 +78,7 @@ class AdaptiveRing(Topology):
             else:
                 feasibility = swarm.options['feasibility'][self.neighbor_idx]
                 pbest_values = swarm.pbest_cost[self.neighbor_idx]
+                import pdb; pdb.set_trace()
                 idx_min = ma.masked_where(feasibility == False, pbest_values).argmin(axis = 1)
                 best_neighbor = self.neighbor_idx[
                     np.arange(len(self.neighbor_idx)), idx_min

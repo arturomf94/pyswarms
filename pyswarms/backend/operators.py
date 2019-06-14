@@ -78,6 +78,59 @@ def compute_pbest(swarm):
     else:
         return (new_pbest_pos, new_pbest_cost)
 
+def compute_constrained_pbest(swarm):
+    """Update the personal best score of a swarm instance
+
+    You can use this method to update your personal best positions.
+
+    .. code-block:: python
+
+        import pyswarms.backend as P
+        from pyswarms.backend.swarms import Swarm
+
+        my_swarm = P.create_swarm(n_particles, dimensions)
+
+        # Inside the for-loop...
+        for i in range(iters):
+            # It updates the swarm internally
+            my_swarm.pbest_pos, my_swarm.pbest_cost = P.update_pbest(my_swarm)
+
+    It updates your :code:`current_pbest` with the personal bests acquired by
+    comparing the (1) cost of the current positions and the (2) personal
+    bests your swarm has attained.
+
+    If the cost of the current position is less than the cost of the personal
+    best, then the current position replaces the previous personal best
+    position.
+
+    Parameters
+    ----------
+    swarm : pyswarms.backend.swarm.Swarm
+        a Swarm instance
+
+    Returns
+    -------
+    numpy.ndarray
+        New personal best positions of shape :code:`(n_particles, n_dimensions)`
+    numpy.ndarray
+        New personal best costs of shape :code:`(n_particles,)`
+    """
+    try:
+        new_pbest_pos = np.copy(swarm.pbest_pos)
+        new_pbest_cost = np.copy(swarm.pbest_cost)
+        for particle_id in range(swarm.n_particles):
+            if swarm.options['feasibility'][particle_id] == True:
+                if swarm.current_cost[particle_id] < swarm.pbest_cost[particle_id]:
+                    new_pbest_pos[particle_id] = swarm.position[particle_id]
+                    new_pbest_cost[particle_id] = swarm.current_cost[particle_id]
+    except AttributeError:
+        rep.logger.exception(
+            "Please pass a Swarm class. You passed {}".format(type(swarm))
+        )
+        raise
+    else:
+        return (new_pbest_pos, new_pbest_cost)
+
 
 def compute_velocity(swarm, clamp, vh, bounds=None):
     """Update the velocity matrix
