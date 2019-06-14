@@ -14,6 +14,7 @@ import logging
 
 # Import modules
 import numpy as np
+import numpy.ma as ma
 from scipy.spatial import cKDTree
 
 from .. import operators as ops
@@ -75,7 +76,9 @@ class AdaptiveRing(Topology):
                 self.neighbor_idx = self.neighbor_idx[:, np.newaxis]
                 best_neighbor = np.arange(swarm.n_particles)
             else:
-                idx_min = swarm.pbest_cost[self.neighbor_idx].argmin(axis=1)
+                feasibility = swarm.options['feasibility'][self.neighbor_idx]
+                pbest_values = swarm.pbest_cost[self.neighbor_idx]
+                idx_min = ma.masked_where(feasibility == False, pbest_values).argmin(axis = 1)
                 best_neighbor = self.neighbor_idx[
                     np.arange(len(self.neighbor_idx)), idx_min
                 ]
