@@ -39,7 +39,7 @@ def con2(x):
     feasible = np.asarray([var[1] for var in feasible])
     return feasible
 
-iterations = 1000 # Set 100 iterations
+iterations = 100 # Set 100 iterations
 # Check feasibility and update personal best only if feasible
 my_swarm.options['feasibility'] = all_constraints(my_swarm.position)
 my_swarm.current_cost = f(my_swarm.position)
@@ -61,7 +61,7 @@ for i in range(iterations):
         my_swarm.options['best_position'] = my_swarm.pbest_pos[min_pos_id]
     my_swarm.best_pos = my_topology.compute_gbest(my_swarm, p = 2, k = 5)
     # Let's print our output
-    if i%50==0:
+    if i%20==0:
         print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
 
     # Part 3: Update position and velocity matrices
