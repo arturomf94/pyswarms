@@ -119,8 +119,12 @@ def compute_constrained_pbest(swarm):
         new_pbest_pos = np.copy(swarm.pbest_pos)
         new_pbest_cost = np.copy(swarm.pbest_cost)
         for particle_id in range(swarm.n_particles):
-            if swarm.pbest_cost[particle_id] != None:
-                if swarm.current_cost[particle_id] < swarm.pbest_cost[particle_id]:
+            if swarm.options['feasibility'][particle_id] == True:
+                if swarm.pbest_cost[particle_id] != None:
+                    if swarm.current_cost[particle_id] < swarm.pbest_cost[particle_id]:
+                        new_pbest_pos[particle_id] = swarm.position[particle_id]
+                        new_pbest_cost[particle_id] = swarm.current_cost[particle_id]
+                else:
                     new_pbest_pos[particle_id] = swarm.position[particle_id]
                     new_pbest_cost[particle_id] = swarm.current_cost[particle_id]
     except AttributeError:

@@ -25,13 +25,18 @@ print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict
 # Define constraints:
 
 def all_constraints(x):
-    #feasible = np.logical_and(con1(x), con2(X))
-    feasible = con1(x)
+    feasible = np.logical_and(con1(x), con2(x))
+    #feasible = con1(x)
     return feasible
 
 def con1(x):
     feasible = x > .5
     feasible = np.asarray([var[0] for var in feasible])
+    return feasible
+
+def con2(x):
+    feasible = x < .5
+    feasible = np.asarray([var[1] for var in feasible])
     return feasible
 
 iterations = 1000 # Set 100 iterations
@@ -50,12 +55,13 @@ for i in range(iterations):
     my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_constrained_pbest(my_swarm) # Update and store
     # Part 2: Update global best
     # Note that gbest computation is dependent on your topology
-    my_swarm.best_cost = min(x for x in my_swarm.pbest_cost if x is not None)
-    min_pos_id = np.where(my_swarm.pbest_cost == my_swarm.best_cost)[0][0]
-    my_swarm.options['best_position'] = my_swarm.pbest_pos[min_pos_id]
+    if np.all(my_swarm.pbest_cost == None) == False:
+        my_swarm.best_cost = min(x for x in my_swarm.pbest_cost if x is not None)
+        min_pos_id = np.where(my_swarm.pbest_cost == my_swarm.best_cost)[0][0]
+        my_swarm.options['best_position'] = my_swarm.pbest_pos[min_pos_id]
     my_swarm.best_pos = my_topology.compute_gbest(my_swarm, p = 2, k = 5)
     # Let's print our output
-    if i%20==0:
+    if i%50==0:
         print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
 
     # Part 3: Update position and velocity matrices
