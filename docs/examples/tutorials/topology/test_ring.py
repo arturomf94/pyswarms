@@ -4,18 +4,27 @@ import numpy.ma as ma
 import math
 
 # Import sphere function as objective function
-from pyswarms.utils.functions.single_obj import sphere as f
-
+# from pyswarms.utils.functions.single_obj import sphere as f
 # Import backend modules
 import pyswarms.backend as P
 from pyswarms.backend.topology import AdaptiveRing
-
+from pyswarms.utils.functions.constrained import C04
+cop = C04()
 N = 100
+dim = 2
+l_lim = cop.l_lim
+u_lim = cop.u_lim
+if l_lim == None or u_lim == None:
+    bounds = None
+else:
+    l_lims = np.asarray([l_lim] * dim)
+    u_lims = np.asarray([u_lim] * dim)
+    bounds = (l_lims, u_lims)
 my_topology = AdaptiveRing() # The Topology Class
 my_options = {'c1': 0.6, 'c2': 0.3, 'w': 0.4,
                 'feasibility': np.zeros(N, dtype = bool),
                 'best_position': None} # arbitrarily set
-my_swarm = P.create_swarm(n_particles = N, dimensions=2, options=my_options) # The Swarm Class
+my_swarm = P.create_swarm(n_particles = N, dimensions=dim, options=my_options, bounds = bounds) # The Swarm Class
 
 # Set pbest position and cost as None
 my_swarm.pbest_pos = np.asarray([None] * N)
@@ -25,36 +34,36 @@ print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict
 
 # Define constraints:
 
-def all_constraints(x):
-    feasible = np.logical_and(con1(x), con2(x))
-    #feasible = con1(x)
-    return feasible
-
-def con1(x):
-    feasible = x > .5
-    feasible = np.asarray([var[0] for var in feasible])
-    return feasible
-
-def con2(x):
-    feasible = x < .5
-    feasible = np.asarray([var[1] for var in feasible])
-    return feasible
+# def all_constraints(x):
+#     feasible = np.logical_and(con1(x), con2(x))
+#     #feasible = con1(x)
+#     return feasible
+#
+# def con1(x):
+#     feasible = x > .5
+#     feasible = np.asarray([var[0] for var in feasible])
+#     return feasible
+#
+# def con2(x):
+#     feasible = x < .5
+#     feasible = np.asarray([var[1] for var in feasible])
+#     return feasible
 
 iterations = 500 # Set 100 iterations
 k_delta = math.ceil( (N - 1) / iterations) # additional neighbors each gen
 k = k_delta
 # Check feasibility and update personal best only if feasible
-my_swarm.options['feasibility'] = all_constraints(my_swarm.position)
-my_swarm.current_cost = f(my_swarm.position)
+my_swarm.options['feasibility'] = cop.constraints(my_swarm.position)
+my_swarm.current_cost = cop.objective(my_swarm.position)
 for particle_id in range(N):
     if my_swarm.options['feasibility'][particle_id] == True:
         my_swarm.pbest_pos[particle_id] = my_swarm.position[particle_id]
-        my_swarm.pbest_cost[particle_id] = f(np.array([my_swarm.pbest_pos[particle_id]]))[0] # Compute personal best pos
+        my_swarm.pbest_cost[particle_id] = cop.objective(np.array([my_swarm.pbest_pos[particle_id]]))[0] # Compute personal best pos
 
 for i in range(iterations):
     # Part 1: Update personal best if feasible
-    my_swarm.options['feasibility'] = all_constraints(my_swarm.position)
-    my_swarm.current_cost = f(my_swarm.position) # Compute current cost
+    my_swarm.options['feasibility'] = cop.constraints(my_swarm.position)
+    my_swarm.current_cost = cop.objective(my_swarm.position) # Compute current cost
     my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_constrained_pbest(my_swarm) # Update and store
     # Part 2: Update global best
     # Note that gbest computation is dependent on your topology

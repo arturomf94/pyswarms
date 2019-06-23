@@ -296,20 +296,20 @@ def compute_constrained_velocity(swarm, clamp, vh, bounds=None):
         c2 = swarm.options["c2"]
         w = swarm.options["w"]
         N = swarm_size[0]
-
+        dim = swarm_size[1]
         temp_velocity = np.zeros(swarm_size)
         for i in range(N):
             temp_velocity[i] = (w * swarm.velocity[i])
             if swarm.pbest_cost[i] != None:
                 temp_velocity[i] += (c1
-                * np.random.uniform(0, 1)
+                * np.random.uniform(0, 1, dim)
                 * (swarm.pbest_pos[i] - swarm.position[i]))
                 if (swarm.best_pos[i] != None)[0]:
                     temp_velocity[i] += (c2
-                    * np.random.uniform(0, 1)
+                    * np.random.uniform(0, 1, dim)
                     * (swarm.best_pos[i] - swarm.position[i]))
             else:
-                temp_velocity[i] += np.random.uniform(0,1, swarm_size[1])
+                temp_velocity[i] += np.random.uniform(0,1, dim)
         updated_velocity = vh(
             temp_velocity, clamp, position=swarm.position, bounds=bounds
         )
