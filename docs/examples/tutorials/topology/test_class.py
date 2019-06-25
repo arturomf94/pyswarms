@@ -9,4 +9,8 @@ optimizer = ps.single.DynamicTopologyOptimizer(cop = cop,
                                                 w = 0.4,
                                                 dim = 2)
 
-optimizer.optimize()
+results_2k, results_10k, results_20k = optimizer.optimize()
+
+print(results_2k)
+print(results_10k)
+print(results_20k)

@@ -18,6 +18,9 @@ class DynamicTopologyOptimizer():
         self.my_topology = AdaptiveRing()
 
     def optimize(self):
+        results_2k = 0
+        results_10k = 0
+        results_20k = 0
         fes = 0 # Function evaluations
         l_lim = self.cop.l_lim
         u_lim = self.cop.u_lim
@@ -70,10 +73,16 @@ class DynamicTopologyOptimizer():
             # Let's print our output
             # if i%50==0:
             #     print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
-            if fes == 2000 or fes == 10000 or fes == 20000:
+            if fes == 2000:
                 print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
-                if fes == 20000:
-                    break
+                results_2k = my_swarm.best_cost
+            elif fes == 10000:
+                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                results_10k = my_swarm.best_cost
+            elif fes == 20000:
+                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                results_20k = my_swarm.best_cost
+                break
 
             # Part 3: Update position and velocity matrices
             # Note that position and velocity updates are dependent on your topology
@@ -82,3 +91,4 @@ class DynamicTopologyOptimizer():
 
         print('The best cost found by our swarm is: {:.4f}'.format(my_swarm.best_cost))
         print('The best position found by our swarm is: {}'.format(my_swarm.options['best_position']))
+        return (results_2k, results_10k, results_20k)
