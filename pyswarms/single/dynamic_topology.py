@@ -71,7 +71,7 @@ class DynamicTopologyOptimizer():
             # if i%50==0:
             #     print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
             if fes == 2000 or fes == 10000 or fes == 20000:
-                print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
                 if fes == 20000:
                     break
 
