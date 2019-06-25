@@ -6,26 +6,6 @@ from pyswarms.backend.topology import AdaptiveRing
 
 
 class DynamicTopologyOptimizer():
-    # def __init__(
-    #     self,
-    #     cop = None, # Constrained function class
-    #     N = 10,
-    #     iterations = 20,
-    #     c1 = 0.6,
-    #     c2 = 0.3,
-    #     w = 0.4,
-    # ):
-    #
-    #     super(DynamicTopologyOptimizer, self).__init__(
-    #         cop = cop,
-    #         N = N,
-    #         iterations = iterations,
-    #         c1 = c1,
-    #         c2 = c2,
-    #         w = w,
-    #     )
-    #
-    #     self.my_topology = AdaptiveRing()
 
     def __init__(self, cop, N, iterations, c1, c2, w, dim):
         self.cop = cop # Constrained function class
@@ -38,6 +18,7 @@ class DynamicTopologyOptimizer():
         self.my_topology = AdaptiveRing()
 
     def optimize(self):
+        fes = 0 # Function evaluations
         l_lim = self.cop.l_lim
         u_lim = self.cop.u_lim
         if l_lim == None or u_lim == None:
@@ -60,15 +41,19 @@ class DynamicTopologyOptimizer():
         # Check feasibility and update personal best only if feasible
         my_swarm.options['feasibility'] = self.cop.constraints(my_swarm.position)
         my_swarm.current_cost = self.cop.objective(my_swarm.position)
+        fes += self.N
         for particle_id in range(self.N):
             if my_swarm.options['feasibility'][particle_id] == True:
                 my_swarm.pbest_pos[particle_id] = my_swarm.position[particle_id]
-                my_swarm.pbest_cost[particle_id] = self.cop.objective(np.array([my_swarm.pbest_pos[particle_id]]))[0] # Compute personal best pos
+                # my_swarm.pbest_cost[particle_id] = self.cop.objective(np.array([my_swarm.pbest_pos[particle_id]]))[0] # Compute personal best pos
+                # fes += self.dim
+                my_swarm.pbest_cost[particle_id] = my_swarm.current_cost[particle_id]
 
         for i in range(self.iterations):
             # Part 1: Update personal best if feasible
             my_swarm.options['feasibility'] = self.cop.constraints(my_swarm.position)
             my_swarm.current_cost = self.cop.objective(my_swarm.position) # Compute current cost
+            fes += self.N
             my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_constrained_pbest(my_swarm) # Update and store
             # Part 2: Update global best
             # Note that gbest computation is dependent on your topology
@@ -83,7 +68,9 @@ class DynamicTopologyOptimizer():
                 my_swarm.best_pos = self.my_topology.compute_gbest(my_swarm, p = 2, k = (self.N - 1))
             k += k_delta
             # Let's print our output
-            if i%50==0:
+            # if i%50==0:
+            #     print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
+            if fes == 20000 or fes == 10000 or fes == 20000:
                 print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
 
             # Part 3: Update position and velocity matrices

@@ -8,10 +8,10 @@ import math
 # Import backend modules
 import pyswarms.backend as P
 from pyswarms.backend.topology import AdaptiveRing
-from pyswarms.utils.functions.constrained import C19
-cop = C19()
+from pyswarms.utils.functions.constrained import Sphere
+cop = Sphere()
 N = 100
-dim = 10
+dim = 2
 l_lim = cop.l_lim
 u_lim = cop.u_lim
 if l_lim == None or u_lim == None:
@@ -41,7 +41,7 @@ my_swarm.current_cost = cop.objective(my_swarm.position)
 for particle_id in range(N):
     if my_swarm.options['feasibility'][particle_id] == True:
         my_swarm.pbest_pos[particle_id] = my_swarm.position[particle_id]
-        my_swarm.pbest_cost[particle_id] = cop.objective(np.array([my_swarm.pbest_pos[particle_id]]))[0] # Compute personal best pos
+        my_swarm.pbest_cost[particle_id] = my_swarm.current_cost[particle_id]
 
 for i in range(iterations):
     # Part 1: Update personal best if feasible
