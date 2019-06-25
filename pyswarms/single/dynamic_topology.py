@@ -34,7 +34,7 @@ class DynamicTopologyOptimizer():
         my_swarm = P.create_swarm(n_particles = self.N, dimensions = self.dim, options = my_options, bounds = bounds)
         my_swarm.pbest_pos = np.asarray([None] * self.N)
         my_swarm.pbest_cost = np.asarray([None] * self.N)
-        print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict__.keys()))
+        #print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict__.keys()))
         k_delta = math.ceil( (self.N - 1) / self.iterations) # additional neighbors each gen
         k = k_delta
 
@@ -70,8 +70,10 @@ class DynamicTopologyOptimizer():
             # Let's print our output
             # if i%50==0:
             #     print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
-            if fes == 20000 or fes == 10000 or fes == 20000:
-                print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
+            if fes == 2000 or fes == 10000 or fes == 20000:
+                print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                if fes == 20000:
+                    break
 
             # Part 3: Update position and velocity matrices
             # Note that position and velocity updates are dependent on your topology
