@@ -8,10 +8,10 @@ import math
 # Import backend modules
 import pyswarms.backend as P
 from pyswarms.backend.topology import AdaptiveRing
-from pyswarms.utils.functions.constrained import C04
-cop = C04()
+from pyswarms.utils.functions.constrained import C19
+cop = C19()
 N = 100
-dim = 2
+dim = 10
 l_lim = cop.l_lim
 u_lim = cop.u_lim
 if l_lim == None or u_lim == None:
@@ -32,24 +32,7 @@ my_swarm.pbest_cost = np.asarray([None] * N)
 
 print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict__.keys()))
 
-# Define constraints:
-
-# def all_constraints(x):
-#     feasible = np.logical_and(con1(x), con2(x))
-#     #feasible = con1(x)
-#     return feasible
-#
-# def con1(x):
-#     feasible = x > .5
-#     feasible = np.asarray([var[0] for var in feasible])
-#     return feasible
-#
-# def con2(x):
-#     feasible = x < .5
-#     feasible = np.asarray([var[1] for var in feasible])
-#     return feasible
-
-iterations = 500 # Set 100 iterations
+iterations = 200 # Set 100 iterations
 k_delta = math.ceil( (N - 1) / iterations) # additional neighbors each gen
 k = k_delta
 # Check feasibility and update personal best only if feasible
