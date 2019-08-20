@@ -40,14 +40,27 @@ class Sphere():
         return feasible
 
     def con1(self, x):
-        feasible = x > .5
+        feasible = x >= .5
         feasible = np.asarray([var[0] for var in feasible])
         return feasible
 
     def con2(self, x):
-        feasible = x < .5
+        feasible = x <= .5
         feasible = np.asarray([var[1] for var in feasible])
         return feasible
+
+    def sum_violations(self, x):
+        N = len(x)
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            g1 = 0.5 - x[i][0]
+            g2 = x[i][1] - 0.5
+            sum_inequalities[i] += max(0, g1) + \
+                                max(0, g2)
+            sum_equalities[i] += 0
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
 
 class C01():
     def __init__(self):
@@ -82,6 +95,21 @@ class C01():
             y[i] = sum
         feasible = y <= 0
         return feasible
+
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            g1 = 0
+            for j in range(dim):
+                g1 += x[i][j] ** 2 - \
+                        5000 * math.cos(0.1 * \
+                        math.pi * x[i][j]) - 4000
+            sum_inequalities[i] += max(0, g1)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
 
 class C03():
     def __init__(self):
@@ -130,6 +158,25 @@ class C03():
         feasible = y <= 0
         return feasible
 
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            g1 = 0
+            for j in range(dim):
+                g1 += x[i][j] ** 2 - \
+                        5000 * math.cos(0.1 * \
+                        math.pi * x[i][j]) - 4000
+            sum_inequalities[i] += max(0, g1)
+            h1 = 0
+            for j in range(dim):
+                h1 -= x[i][j] * math.sin(2 * x[i][j])
+            sum_equalities[i] += math.fabs(h1)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
+
 class C04():
     def __init__(self):
         self.l_lim = -10
@@ -175,6 +222,22 @@ class C04():
             y[i] = sum
         feasible = y <= 0
         return feasible
+
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            g1 = 0
+            g2 = 0
+            for j in range(dim):
+                g1 -= x[i][j] * math.sin(2 * x[i][j])
+                g2 += x[i][j] * math.sin(x[i][j])
+            sum_inequalities[i] += max(0, g1) + \
+                                    max(0, g2)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
 
 class C06():
     def __init__(self):
@@ -296,6 +359,36 @@ class C06():
         feasible = y <= 0
         return feasible
 
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            h1 = 0
+            h2 = 0
+            h3 = 0
+            h4 = 0
+            h5 = 0
+            h6 = 0
+            for j in range(dim):
+                h1 -= x[i][j] * math.sin(x[i][j])
+                h2 += x[i][j] * math.sin(math.pi * x[i][j])
+                h3 -= x[i][j] * math.cos(x[i][j])
+                h4 += x[i][j] * math.cos(math.pi * x[i][j])
+                h5 += x[i][j] * math.sin(2 * \
+                        math.sqrt(math.fabs(x[i][j])))
+                h6 -= x[i][j] * math.sin(2 * \
+                        math.sqrt(math.fabs(x[i][j])))
+            sum_equalities[i] += math.fabs(h1) + \
+                                    math.fabs(h2) + \
+                                    math.fabs(h3) + \
+                                    math.fabs(h4) + \
+                                    math.fabs(h5) + \
+                                    math.fabs(h6)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
+
 class C07():
     def __init__(self):
         self.l_lim = -50
@@ -344,6 +437,24 @@ class C07():
         feasible = y <= 0
         return feasible
 
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            h1 = 0
+            h2 = 0
+            for j in range(dim):
+                h1 += x[i][j] - 100 * math.cos(0.5 * \
+                        x[i][j]) + 100
+                h2 -= x[i][j] - 100 * math.cos(0.5 * \
+                        x[i][j]) + 100
+            sum_equalities[i] += math.fabs(h1) + \
+                                    math.fabs(h2)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
+
 class C11():
     def __init__(self):
         self.l_lim = -100
@@ -369,7 +480,7 @@ class C11():
         y = np.zeros(N)
         dim = len(x[0])
         for i in range(N):
-            prod = 0
+            prod = 1
             for j in range(dim):
                 prod *= x[i][j]
             y[i] = prod
@@ -388,6 +499,23 @@ class C11():
             y[i] = math.fabs(sum) - e
         feasible = y <= 0
         return feasible
+
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            g1 = 1
+            for j in range(dim):
+                g1 *= x[i][j]
+            sum_inequalities[i] += max(0, g1)
+            h1 = 0
+            for j in range(dim - 1):
+                h1 += (x[i][j] - x[i][j+1]) ** 2
+            sum_equalities[i] += math.fabs(h1)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
 
 class C13():
     def __init__(self):
@@ -450,6 +578,30 @@ class C13():
         feasible = y <= 0
         return feasible
 
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            g1 = 0
+            g2 = 0
+            g3 = 0
+            for j in range(dim):
+                g1 += x[i][j] ** 2 - 10 * \
+                        math.cos(2 * math.pi * \
+                        x[i][j]) + 10
+                g2 += x[i][j]
+                g3 += x[i][j]
+            g1 -= 100
+            g2 -= 2 * dim
+            g3 = 5 - g3
+            sum_inequalities[i] += max(0, g1) + \
+                                    max(0, g2) + \
+                                    max(0, g3)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
+
 class C19():
     def __init__(self):
         self.l_lim = -50
@@ -495,3 +647,23 @@ class C19():
             y[i] = sum - 0.5 * dim
         feasible = y <= 0
         return feasible
+
+    def sum_violations(self, x):
+        N = len(x)
+        dim = len(x[0])
+        sum_equalities = np.zeros(N)
+        sum_inequalities = np.zeros(N)
+        for i in range(N):
+            g1 = 0
+            g2 = 0
+            for j in range(dim - 1):
+                g1 += -10 * math.exp(-0.2 * math.sqrt(x[i][j] ** 2 + \
+                        x[i][j + 1] ** 2))
+            for j in range(dim):
+                g2 += math.sin(2 * x[i][j]) ** 2
+            g1 += (dim - 1) * 10 / math.exp(-5)
+            g2 -= 0.5 * dim
+            sum_inequalities[i] += max(0, g1) + \
+                                    max(0, g2)
+        total_violations = sum_inequalities + sum_equalities
+        return total_violations
