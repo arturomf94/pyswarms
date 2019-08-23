@@ -22,8 +22,6 @@ my_options = {'c1': 0.6, 'c2': 0.3, 'w': 0.4,
                 'best_position': None}
 my_swarm = P.create_swarm(n_particles = N, dimensions=dim, options=my_options, bounds = bounds)
 iterations = 200
-k_delta = math.ceil( (N - 1) / iterations)
-k = k_delta
 
 my_swarm.options['feasibility'] = cop.constraints(my_swarm.position)
 my_swarm.current_cost = cop.sum_violations(my_swarm.position)
@@ -32,16 +30,14 @@ my_swarm.pbest_cost = my_swarm.current_cost
 
 
 for i in range(iterations):
-    my_swarm.options['feasibility'] = cop.constraints(my_swarm.position)
     if np.all(my_swarm.options['feasibility'] == False) == False:
         break
-    my_swarm.current_cost = cop.sum_violations(my_swarm.position)
     my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_pbest(my_swarm)
 
     my_swarm.best_cost = min(x for x in my_swarm.pbest_cost if x is not None)
     min_pos_id = np.where(my_swarm.pbest_cost == my_swarm.best_cost)[0][0]
     my_swarm.options['best_position'] = my_swarm.pbest_pos[min_pos_id]
-    my_swarm.best_pos = my_topology.compute_gbest(my_swarm, p = 2, k = (N - 1))
+    my_swarm.best_pos = my_topology.compute_gbest(my_swarm, p = 2, k = N)
 
 
     if i%50==0:
@@ -54,6 +50,7 @@ for i in range(iterations):
     my_swarm.best_pos = new_best_pos
     my_swarm.velocity = my_topology.compute_velocity(my_swarm)
     my_swarm.position = my_topology.compute_position(my_swarm)
+    my_swarm.options['feasibility'] = cop.constraints(my_swarm.position)
 
 
 if np.all(my_swarm.options['feasibility'] == False) == False:
