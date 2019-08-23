@@ -21,8 +21,6 @@ my_options = {'c1': 0.6, 'c2': 0.3, 'w': 0.4,
                 'feasibility': np.zeros(N, dtype = bool),
                 'best_position': None}
 my_swarm = P.create_swarm(n_particles = N, dimensions=dim, options=my_options, bounds = bounds)
-print('The following are the attributes of our swarm: {}'.format(my_swarm.__dict__.keys()))
-
 iterations = 200
 k_delta = math.ceil( (N - 1) / iterations)
 k = k_delta
