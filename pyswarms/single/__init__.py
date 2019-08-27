@@ -18,6 +18,7 @@ from .global_best import GlobalBestPSO
 from .local_best import LocalBestPSO
 from .general_optimizer import GeneralOptimizerPSO
 from .dynamic_topology import DynamicTopologyOptimizer
+from .search_feasible_region import SearchFeasibleRegion
 
 __all__ = ["GlobalBestPSO", "LocalBestPSO", "GeneralOptimizerPSO",
-            "DynamicTopologyOptimizer"]
+            "DynamicTopologyOptimizer", "SearchFeasibleRegion"]
