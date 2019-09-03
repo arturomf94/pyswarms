@@ -16,6 +16,7 @@ class SearchFeasibleRegion():
         self.w = w
         self.dim = dim
         self.my_topology = AdaptiveRing()
+        self.success = False
 
     def optimize(self):
         results_2k = 0
@@ -78,6 +79,7 @@ class SearchFeasibleRegion():
 
 
         if np.all(my_swarm.options['feasibility'] == False) == False:
+            self.success = True
             print('The feasible region was found!')
             print('The following are all the known feasible points:')
             print(my_swarm.position[my_swarm.options['feasibility'] == True])
@@ -86,4 +88,4 @@ class SearchFeasibleRegion():
             print('The best sum of violations found by our swarm is: {:.4f}'.format(my_swarm.best_cost))
             print('The best position found by our swarm is: {}'.format(my_swarm.options['best_position']))
 
-        return (results_2k, results_10k, results_20k)
+        return (my_swarm.best_cost, results_2k, results_10k, results_20k, self.success)

@@ -9,8 +9,10 @@ optimizer = ps.single.SearchFeasibleRegion(cop = cop,
                                             w = 0.4,
                                             dim = 2)
 
-results_2k, results_10k, results_20k = optimizer.optimize()
+best_cost, results_2k, results_10k, results_20k, success = optimizer.optimize()
 
+print(best_cost)
 print(results_2k)
 print(results_10k)
 print(results_20k)
+print(success)
