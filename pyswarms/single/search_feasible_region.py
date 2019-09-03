@@ -46,6 +46,8 @@ class SearchFeasibleRegion():
 
         for i in range(self.iterations):
             if np.all(my_swarm.options['feasibility'] == False) == False:
+                if i == 0:
+                    my_swarm.best_cost = 0
                 break
 
             my_swarm.best_cost = min(x for x in my_swarm.pbest_cost if x is not None)
