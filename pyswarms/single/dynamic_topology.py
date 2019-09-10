@@ -7,7 +7,7 @@ from pyswarms.backend.topology import AdaptiveRing
 
 class DynamicTopologyOptimizer():
 
-    def __init__(self, cop, N, iterations, c1, c2, w, dim):
+    def __init__(self, cop, N, iterations, c1, c2, w, dim, verbose = False):
         self.cop = cop # Constrained function class
         self.N = N
         self.iterations = iterations
@@ -15,6 +15,7 @@ class DynamicTopologyOptimizer():
         self.c2 = c2
         self.w = w
         self.dim = dim
+        self.verbose = verbose
         self.my_topology = AdaptiveRing()
 
     def optimize(self):
@@ -61,13 +62,16 @@ class DynamicTopologyOptimizer():
                 my_swarm.best_pos = self.my_topology.compute_gbest(my_swarm, p = 2, k = self.N)
             k += k_delta
             if fes == 2000:
-                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                if self.verbose == True:
+                    print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
                 results_2k = my_swarm.best_cost
             elif fes == 10000:
-                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                if self.verbose == True:
+                    print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
                 results_10k = my_swarm.best_cost
             elif fes == 20000:
-                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                if self.verbose == True:
+                    print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
                 results_20k = my_swarm.best_cost
                 break
 
@@ -77,7 +81,7 @@ class DynamicTopologyOptimizer():
             my_swarm.current_cost = self.cop.objective(my_swarm.position)
             fes += self.N
             my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_constrained_pbest(my_swarm)
-
-        print('The best cost found by our swarm is: {:.4f}'.format(my_swarm.best_cost))
-        print('The best position found by our swarm is: {}'.format(my_swarm.options['best_position']))
+        if self.verbose == True:
+            print('The best cost found by our swarm is: {:.4f}'.format(my_swarm.best_cost))
+            print('The best position found by our swarm is: {}'.format(my_swarm.options['best_position']))
         return (results_2k, results_10k, results_20k)

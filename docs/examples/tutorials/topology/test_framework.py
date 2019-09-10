@@ -46,6 +46,10 @@ class TestAlgorithm():
                     best_cost, results_2k, results_10k, results_20k, success = optimizer.optimize()
                     print('COP: ' + str(cop))
                     print('DIM: ' + str(dim))
+                    if success == True:
+                        print('The feasible region was found!')
+                    else:
+                        print('The feasible region was not found :(')
                     print('2k: ' + str(results_2k))
                     print('10k: ' + str(results_10k))
                     print('20k: ' + str(results_20k))

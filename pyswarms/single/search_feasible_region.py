@@ -7,7 +7,7 @@ from pyswarms.backend.topology import AdaptiveRing
 
 class SearchFeasibleRegion():
 
-    def __init__(self, cop, N, iterations, c1, c2, w, dim):
+    def __init__(self, cop, N, iterations, c1, c2, w, dim, verbose = False):
         self.cop = cop # Constrained function class
         self.N = N
         self.iterations = iterations
@@ -15,6 +15,7 @@ class SearchFeasibleRegion():
         self.c2 = c2
         self.w = w
         self.dim = dim
+        self.verbose = verbose
         self.my_topology = AdaptiveRing()
         self.success = False
 
@@ -55,13 +56,16 @@ class SearchFeasibleRegion():
             my_swarm.options['best_position'] = my_swarm.pbest_pos[min_pos_id]
             my_swarm.best_pos = self.my_topology.compute_gbest(my_swarm, p = 2, k = self.N)
             if fes == 2000:
-                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                if self.verbose == True:
+                    print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
                 results_2k = my_swarm.best_cost
             elif fes == 10000:
-                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                if self.verbose == True:
+                    print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
                 results_10k = my_swarm.best_cost
             elif fes == 20000:
-                print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
+                if self.verbose == True:
+                    print('FES: {} | my_swarm.best_cost: {:.4f}'.format(fes, my_swarm.best_cost))
                 results_20k = my_swarm.best_cost
                 break
             new_best_pos = np.empty([self.N, self.dim])
@@ -77,17 +81,20 @@ class SearchFeasibleRegion():
             my_swarm.pbest_pos, my_swarm.pbest_cost = P.compute_pbest(my_swarm)
 
             if i%50==0:
-                print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
+                if self.verbose == True:
+                    print('Iteration: {} | my_swarm.best_cost: {:.4f}'.format(i+1, my_swarm.best_cost))
 
 
         if np.all(my_swarm.options['feasibility'] == False) == False:
             self.success = True
-            print('The feasible region was found!')
-            print('The following are all the known feasible points:')
-            print(my_swarm.position[my_swarm.options['feasibility'] == True])
+            if self.verbose == True:
+                print('The feasible region was found!')
+                print('The following are all the known feasible points:')
+                print(my_swarm.position[my_swarm.options['feasibility'] == True])
         else:
-            print('The feasible region was not found :(')
-            print('The best sum of violations found by our swarm is: {:.4f}'.format(my_swarm.best_cost))
-            print('The best position found by our swarm is: {}'.format(my_swarm.options['best_position']))
+            if self.verbose == True:
+                print('The feasible region was not found :(')
+                print('The best sum of violations found by our swarm is: {:.4f}'.format(my_swarm.best_cost))
+                print('The best position found by our swarm is: {}'.format(my_swarm.options['best_position']))
 
         return (my_swarm.best_cost, results_2k, results_10k, results_20k, self.success)
